@@ -9,7 +9,7 @@ using ServiceLocator.Player;
 
 namespace ServiceLocator.UI
 {
-    public class UIService : MonoBehaviour
+    public class UIService : GenericMonoSingleton<UIService>
     {
         [SerializeField] private EventService eventService;
 
@@ -38,9 +38,7 @@ namespace ServiceLocator.UI
         [SerializeField] private Button playAgainButton;
         [SerializeField] private Button quitButton;
 
-        public static UIService Instance { get { return instance; } }
-
-        private static UIService instance;
+       
 
         private void Start()
         {
@@ -59,18 +57,8 @@ namespace ServiceLocator.UI
             SubscribeToEvents();
         }
 
-        private void Awake()
-        {
-            if (instance == null)
-            {
-                instance = this;
-            }
-            else
-            {
-                Destroy(this.gameObject);
-                Debug.LogError("Singleton of UIService is Trying to create Second Instance");
-            }
-        }
+       
+        
 
         public void SubscribeToEvents() => eventService.OnMapSelected.AddListener(OnMapSelected);
 
