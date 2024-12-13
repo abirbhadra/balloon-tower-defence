@@ -11,10 +11,8 @@ namespace ServiceLocator.Player
         private MonkeyView monkeyView;
         private MonkeyScriptableObject monkeyScriptableObject;
         private ProjectilePool projectilePool;
-
         private List<BloonController> bloonsInRange;
         private float attackTimer;
-
         public MonkeyController(MonkeyScriptableObject monkeyScriptableObject, ProjectilePool projectilePool)
         {
             monkeyView = Object.Instantiate(monkeyScriptableObject.Prefab);
@@ -26,20 +24,26 @@ namespace ServiceLocator.Player
             bloonsInRange = new List<BloonController>();
             ResetAttackTimer();
         }
-
         public void SetPosition(Vector3 positionToSet) => monkeyView.transform.position = positionToSet;
-
+        public void UpdateMonkey()
+        {
+            if (bloonsInRange.Count > 0)
+            {
+                RotateTowardsTarget(bloonsInRange[0]);
+                ShootAtTarget(bloonsInRange[0]);
+            }
+        }
         public void BloonEnteredRange(BloonController bloon)
         {
             if (CanAttackBloon(bloon.GetBloonType()))
                 bloonsInRange.Add(bloon);
         }
-
         public void BloonExitedRange(BloonController bloon)
         {
             if (CanAttackBloon(bloon.GetBloonType()))
                 bloonsInRange.Remove(bloon);
         }
+
 
         public bool CanAttackBloon(BloonType bloonType) => monkeyScriptableObject.AttackableBloons.Contains(bloonType);
 
@@ -51,7 +55,6 @@ namespace ServiceLocator.Player
             float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + 180;
             monkeyView.transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
-
         private void ShootAtTarget(BloonController targetBloon)
         {
             attackTimer -= Time.deltaTime;
@@ -64,7 +67,6 @@ namespace ServiceLocator.Player
                 ResetAttackTimer();
             }
         }
-
         private void ResetAttackTimer() => attackTimer = monkeyScriptableObject.AttackRate;
     }
 }
