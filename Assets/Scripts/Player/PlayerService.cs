@@ -26,8 +26,8 @@ namespace ServiceLocator.Player
         {
             health = playerScriptableObject.Health;
             money = playerScriptableObject.Money;
-            UIService.Instance.UpdateHealthUI(health);
-            UIService.Instance.UpdateMoneyUI(money);
+            GameService.Instance.UIService.UpdateHealthUI(health);
+            GameService.Instance.UIService.UpdateMoneyUI(money);
             activeMonkeys = new List<MonkeyController>();
         }
         public void Update()
@@ -65,16 +65,17 @@ namespace ServiceLocator.Player
         {
             if (monkeyCost > Money)
                 return;
-            MapService.Instance.ValidateSpawnPosition(dropPosition);
+            GameService.Instance.mapService.ValidateSpawnPosition(dropPosition);
         }
         public void TrySpawningMonkey(MonkeyType monkeyType, int monkeyCost, Vector3 dropPosition)
         {
             if (monkeyCost > money)
                 return;
-            if (MapService.Instance.TryGetMonkeySpawnPosition(dropPosition, out Vector3 spawnPosition))
+            if (GameService.Instance.mapService.TryGetMonkeySpawnPosition(dropPosition, out Vector3 spawnPosition))
+
             {
                 SpawnMonkey(monkeyType, spawnPosition);
-                SoundService.Instance.PlaySoundEffects(SoundType.SpawnMonkey);
+                GameService.Instance.soundService.PlaySoundEffects(SoundType.SpawnMonkey);
             }
         }
         public void SpawnMonkey(MonkeyType monkeyType, Vector3 spawnPosition)
@@ -84,7 +85,7 @@ namespace ServiceLocator.Player
             monkey.SetPosition(spawnPosition);
             activeMonkeys.Add(monkey);
             money -= monkeySO.Cost;
-            UIService.Instance.UpdateMoneyUI(money);
+            GameService.Instance.UIService.UpdateMoneyUI(money);
         }
 
         public void ReturnProjectileToPool(ProjectileController projectileToReturn) => projectilePool.ReturnItem(projectileToReturn);
@@ -92,7 +93,7 @@ namespace ServiceLocator.Player
         public void TakeDamage(int damageToTake)
         {
             health = health - damageToTake <= 0 ? 0 : health - damageToTake;
-            UIService.Instance.UpdateHealthUI(health);
+            GameService.Instance.UIService.UpdateMoneyUI(money);
             if (health <= 0)
             {
                 PlayerDeath();
@@ -101,8 +102,8 @@ namespace ServiceLocator.Player
         public void GetReward(int reward)
         {
             money += reward;
-            UIService.Instance.UpdateMoneyUI(money);
+            GameService.Instance.UIService.UpdateMoneyUI(money);
         }
-        private void PlayerDeath() => UIService.Instance.UpdateGameEndUI(false);
+        private void PlayerDeath() => GameService.Instance.UIService.UpdateGameEndUI(false);
     }
 }
